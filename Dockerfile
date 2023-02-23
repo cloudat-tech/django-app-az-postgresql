@@ -2,6 +2,9 @@
 
 FROM python:3.8.2
 
+# Expose app on port 8000
+EXPOSE 8000
+
 # Make a new directory to put our code in.
 
 RUN mkdir /code
