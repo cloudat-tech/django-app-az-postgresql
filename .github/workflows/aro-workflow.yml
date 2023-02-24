@@ -41,6 +41,7 @@ jobs:
   Deploy:      
     name: Deploy
     runs-on: ubuntu-20.04
+    needs: [ Build ]
     steps: 
         - name: Login to ARO Cluster
           id: set-aro-context
