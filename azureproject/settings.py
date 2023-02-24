@@ -93,13 +93,14 @@ WSGI_APPLICATION = 'azureproject.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DBNAME'),
-        'HOST': os.environ.get('DBHOST'),
-        'USER': os.environ.get('DBUSER'),
-        'PASSWORD': os.environ.get('DBPASS'),
+        'NAME': os.environ.get('DATABASE_NAME'),
+        'HOST': os.environ.get('DATABASE_HOST'),
+        'USER': os.environ.get('DATABASE_USER'),
+        'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
+        'PORT': '5432',
+        'OPTIONS': {'sslmode': 'disable'},
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
