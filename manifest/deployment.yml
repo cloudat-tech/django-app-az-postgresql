@@ -15,8 +15,6 @@ spec:
       containers:
       - name: django-app
         image: docker.io/cloudattech/django:latest
-      imagePullSecrets:
-      - name: docker-registry
         ports:
         - containerPort: 8000
         env:
