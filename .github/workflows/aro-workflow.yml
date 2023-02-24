@@ -38,3 +38,27 @@ jobs:
            registry: ${{ env.REGISTRY }}
            username: ${{ env.REGISTRY_USER }}
            password: ${{ env.REGISTRY_PASSWORD }}
+
+    name: Deploy
+    runs-on: ubuntu-20.04
+    steps: 
+        - name: Login to ARO Cluster
+          id: set-aro-context
+          uses: redhat-actions/oc-login@v1
+          with:
+          openshift_server_url: ${{ env.OPENSHIFT_SERVER }}
+          openshift_token: ${{ env.OPENSHIFT_TOKEN }}
+          insecure_skip_tls_verify: true
+          namespace: ${{ env.OPENSHIFT_NAMESPACE }}
+
+        - name: Create and expose app
+          id: deploy-app
+          uses: Azure/k8s-deploy@v4
+          with:
+          namespace: ${{ env.OPENSHIFT_NAMESPACE }}
+          manifests: |
+            mainfest/deployment.yaml
+          images: |
+            ${{ env.REGISTRY }}/${{ env.REGISTRY_USER }}/${{ env.APP_NAME }}:${{ env.TAG }}
+
+
