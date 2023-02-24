@@ -90,16 +90,28 @@ WSGI_APPLICATION = 'azureproject.wsgi.application'
 
 # Configure Postgres database for local development
 #   Set these environment variables in the .env file for this project.
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.postgresql',
+#       'NAME': os.environ.get('DATABASE_NAME'),
+#       'HOST': os.environ.get('DATABASE_HOST'),
+#       'USER': os.environ.get('DATABASE_USER'),
+#       'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
+#       'PORT': '5432',
+#       'OPTIONS': {'sslmode': 'disable'},
+#   }
+#}
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DATABASE_NAME'),
-        'HOST': os.environ.get('DATABASE_HOST'),
-        'USER': os.environ.get('DATABASE_USER'),
-        'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
-        'PORT': '5432',
-        'OPTIONS': {'sslmode': 'disable'},
-    }
+   'default':{
+      'ENGINE': 'django.db.backends.postgresql_psycopg2',
+      'NAME': os.getenv('DATABASE_NAME'),
+      'USER': os.getenv('DATABASE_USER'),
+      'PASSWORD': os.getenv('DATABASE_PASSWORD'),
+      'HOST': os.getenv('DATABASE_HOST'),
+      'PORT': '5432',
+      'OPTIONS': {'sslmode': 'disable'}
+   }
 }
 
 # Password validation
