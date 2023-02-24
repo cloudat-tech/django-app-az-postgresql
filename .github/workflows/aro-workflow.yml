@@ -61,7 +61,7 @@ jobs:
           with:
             namespace: ${{ env.OPENSHIFT_NAMESPACE }}
             manifests: |
-              mainfest/deployment.yml
+              manifest/deployment.yml
             images: |
               ${{ env.REGISTRY }}/${{ env.REGISTRY_USER }}/${{ env.APP_NAME }}:${{ env.TAG }}
 
