@@ -2,8 +2,8 @@ name: aro-ci-cd-build
 
 env:
   REGISTRY: docker.io/cloudattech
-  REGISTRY_USER: ${{ steps.issecrets.outputs.REGISTRY_USER }}
-  REGISTRY_PASSWORD: ${{ steps.issecrets.outputs.REGISTRY_PASSWORD }}
+  REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
+  REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
   VAULT_TOKEN: ${{secrets.VAULT_TOKEN}}
   OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
   OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
@@ -35,6 +35,8 @@ jobs:
             secrets: |
                 secret/data/test/django registry_user | REGISTRY_USER ; 
                 secret/data/test/django registry_password | REGISTRY_PASSWORD
+        - run: echo $REGISTRY_USER
+        - run: echo $REGISTRY_PASSWORD
 
         -  name: Login to Docker Hub
            uses: docker/login-action@v2
