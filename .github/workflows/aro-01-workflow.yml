@@ -2,8 +2,8 @@ name: aro-ci-cd-build
 
 env:
   REGISTRY: docker.io/cloudattech
-  #REGISTRY_USER: cloudattech
-  #REGISTRY_PASSWORD: ${{secrets.REGISTRY_PASSWORD}}
+  #REGISTRY_USER: ${{ steps.issecrets.outputs.REGISTRY_USER }}
+  #REGISTRY_PASSWORD: ${{ steps.issecrets.outputs.REGISTRY_PASSWORD }}
   VAULT_TOKEN: ${{secrets.VAULT_TOKEN}}
   OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
   OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
@@ -47,6 +47,9 @@ jobs:
 
         - name: Push to registry
           id: push-to-registry
+          env:
+            REGISTRY_USER: ${{ steps.issecrets.outputs.REGISTRY_USER }}
+            REGISTRY_PASSWORD: ${{ steps.issecrets.outputs.REGISTRY_PASSWORD }}
           uses: redhat-actions/push-to-registry@v2
           with:
            image: ${{ steps.image-build.outputs.image }}
@@ -54,5 +57,5 @@ jobs:
            registry: ${{ env.REGISTRY }}
            #username: $REGISTRY_USER
            #password: $REGISTRY_PASSWORD
-           username: "${{ steps.issecrets.outputs.REGISTRY_USER }}"
-           password: "${{ steps.issecrets.outputs.REGISTRY_PASSWORD }}"
+           username: ${{ env.REGISTRY_USER }}
+           password: ${{ env.REGISTRY_PASSWORD }}
