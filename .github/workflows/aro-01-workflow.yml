@@ -9,8 +9,8 @@ env:
   OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
   OPENSHIFT_NAMESPACE: "amol-tapase-dev"
   APP_NAME: "django-app"
-  #TAG: "latest"
-  RELEASE_REVISION: "pr-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}"
+  TAG: "latest"
+  #RELEASE_REVISION: "pr-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}"
 
 on: [ workflow_dispatch]
 
@@ -41,7 +41,7 @@ jobs:
           uses: redhat-actions/buildah-build@v2
           with:
            image: ${{ env.APP_NAME }}
-           tags: ${{ env.RELEASE_REVISION }}
+           tags: ${{ env.TAG }}
            dockerfiles: |
             ./Dockerfile
 
