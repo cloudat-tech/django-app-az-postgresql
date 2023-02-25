@@ -36,6 +36,12 @@ jobs:
                 secret/data/test/django registry_user | REGISTRY_USER ; 
                 secret/data/test/django registry_password | REGISTRY_PASSWORD
 
+        -  name: Login to Docker Hub
+           uses: docker/login-action@v2
+           with:
+            username: ${{ steps.issecrets.outputs.REGISTRY_USER }}
+            password: ${{ steps.issecrets.outputs.REGISTRY_PASSWORD }}
+
         - name: Build from Dockerfile
           id: image-build
           uses: redhat-actions/buildah-build@v2
