@@ -29,7 +29,7 @@ jobs:
             method: token
             url: https://vault-public-vault-baebe7c1.3dda8bad.z1.hashicorp.cloud:8200
             #namespace: admin/
-            token: ${{ secrets.VAULT_TOKEN }}
+            token: ${{ env.VAULT_TOKEN }}
             tlsSkipVerify: false
             #caCertificate: ${{ secrets.VAULT_CA_CERT }}
             secrets: |
