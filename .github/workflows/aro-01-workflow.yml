@@ -31,8 +31,8 @@ jobs:
             token: ${{ secrets.VAULT_TOKEN }}
             #caCertificate: ${{ secrets.VAULT_CA_CERT }}
             secrets: |
-                    secret/test/django/registry_user | REGISTRY_USER ; 
-                    secret/test/django/registry_password | REGISTRY_PASSWORD
+                    secret/test/django registry_user | REGISTRY_USER ; 
+                    secret/test/django registry_password | REGISTRY_PASSWORD
 
         - name: Build from Dockerfile
           id: image-build
