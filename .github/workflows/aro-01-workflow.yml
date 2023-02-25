@@ -52,5 +52,7 @@ jobs:
            image: ${{ steps.image-build.outputs.image }}
            tags: ${{ steps.image-build.outputs.tags }}
            registry: ${{ env.REGISTRY }}
-           username: $REGISTRY_USER
-           password: $REGISTRY_PASSWORD
+           #username: $REGISTRY_USER
+           #password: $REGISTRY_PASSWORD
+           username: ${{ steps.issecrets.outputs.REGISTRY_USER }}
+           password: ${{ steps.issecrets.outputs.REGISTRY_PASSWORD }}
