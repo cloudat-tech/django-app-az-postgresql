@@ -33,8 +33,8 @@ jobs:
             tlsSkipVerify: false
             #caCertificate: ${{ secrets.VAULT_CA_CERT }}
             secrets: |
-                secret/test/django registry_user | REGISTRY_USER ; 
-                secret/test/django registry_password | REGISTRY_PASSWORD
+                secret/data/test/django registry_user | REGISTRY_USER ; 
+                secret/data/test/django registry_password | REGISTRY_PASSWORD
 
         - name: Build from Dockerfile
           id: image-build
