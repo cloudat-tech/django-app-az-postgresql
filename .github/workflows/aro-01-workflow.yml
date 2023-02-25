@@ -24,11 +24,12 @@ jobs:
         
         - name: Import Secrets
           id: import-secrets
-          uses: hashicorp/vault-action@v2
+          uses: hashicorp/vault-action@v2.5.0
           with:
             method: token
             url: https://vault-public-vault-baebe7c1.3dda8bad.z1.hashicorp.cloud:8200
             token: ${{ secrets.VAULT_TOKEN }}
+            tlsSkipVerify: false
             #caCertificate: ${{ secrets.VAULT_CA_CERT }}
             secrets: |
                     secret/test/django registry_user | REGISTRY_USER ; 
