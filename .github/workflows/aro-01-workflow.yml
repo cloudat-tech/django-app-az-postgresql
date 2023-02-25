@@ -1,0 +1,54 @@
+name: aro-ci-cd-build
+
+env:
+  REGISTRY: docker.io/cloudattech
+  #REGISTRY_USER: cloudattech
+  #REGISTRY_PASSWORD: ${{secrets.REGISTRY_PASSWORD}}
+  VAULT_TOKEN: ${{secrets.VAULT_TOKEN}}
+  OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
+  OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
+  OPENSHIFT_NAMESPACE: "amol-tapase-dev"
+  APP_NAME: "django-app"
+  #TAG: "latest"
+  RELEASE_REVISION: "pr-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}"
+
+on: [ workflow_dispatch]
+
+jobs:
+  Build:
+    name: Build
+    runs-on: ubuntu-20.04
+    steps:
+        - name: Checkout Sourcecode
+          uses: actions/checkout@v3
+        
+        - name: Import Secrets
+          id: import-secrets
+          uses: hashicorp/vault-action@v2.5.0
+          with:
+            method: token
+            url: https://vault-public-vault-baebe7c1.3dda8bad.z1.hashicorp.cloud:8200
+            token: ${{ secrets.VAULT_TOKEN }}
+            #caCertificate: ${{ secrets.VAULT_CA_CERT }}
+            secrets: |
+                    secret/data/test/django/registry_user | REGISTRY_USER ; 
+                    secret/data/test/django/registry_password | REGISTRY_PASSWORD
+
+        - name: Build from Dockerfile
+          id: image-build
+          uses: redhat-actions/buildah-build@v2
+          with:
+           image: ${{ env.APP_NAME }}
+           tags: ${{ env.RELEASE_REVISION }}
+           dockerfiles: |
+            ./Dockerfile
+
+        - name: Push to registry
+          id: push-to-registry
+          uses: redhat-actions/push-to-registry@v2
+          with:
+           image: ${{ steps.image-build.outputs.image }}
+           tags: ${{ steps.image-build.outputs.tags }}
+           registry: ${{ env.REGISTRY }}
+           username: $REGISTRY_USER
+           password: $REGISTRY_PASSWORD
