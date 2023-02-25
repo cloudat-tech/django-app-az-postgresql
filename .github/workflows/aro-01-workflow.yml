@@ -54,5 +54,5 @@ jobs:
            registry: ${{ env.REGISTRY }}
            #username: $REGISTRY_USER
            #password: $REGISTRY_PASSWORD
-           username: ${{ steps.issecrets.outputs.REGISTRY_USER }}
-           password: ${{ steps.issecrets.outputs.REGISTRY_PASSWORD }}
+           username: "${{ steps.issecrets.outputs.REGISTRY_USER }}"
+           password: "${{ steps.issecrets.outputs.REGISTRY_PASSWORD }}"
