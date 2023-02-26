@@ -48,8 +48,8 @@ jobs:
            uses: docker/login-action@v2
            with:
             registry: ${{ env.JFROG_REGISTRY }}
-            username: ${{ env.JFROG_USER }}
-            password: ${{ env.JFROG_PASSWORD }}
+            username: ${{ env.JFROG_REGISTRY_USER }}
+            password: ${{ env.JFROG_REGISTRY_PASSWORD }}
 
         - name: Build from Dockerfile
           id: image-build
