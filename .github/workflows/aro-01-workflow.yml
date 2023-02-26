@@ -1,7 +1,7 @@
 name: aro-ci-cd-build
 
 env:
-  JFROG_REGISTRY: cloudattech.jfrog.io/container-repo
+  JFROG_REGISTRY: cloudattech.jfrog.io
   JFROG_REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
   JFROG_REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
   VAULT_TOKEN: ${{secrets.VAULT_TOKEN}}
