@@ -12,7 +12,11 @@ env:
   TAG: "latest"
   #RELEASE_REVISION: "pr-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}"
 
-on: [ workflow_dispatch]
+#on: [ workflow_dispatch]
+on:
+  push:
+    branches:
+      - "main"
 
 jobs:
   Build:
