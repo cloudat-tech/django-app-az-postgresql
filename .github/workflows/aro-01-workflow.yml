@@ -10,7 +10,6 @@ env:
   OPENSHIFT_NAMESPACE: "amol-tapase-dev"
   APP_NAME: "django-app"
   TAG: "latest"
-  #RELEASE_REVISION: "pr-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}"
 
 #on: [ workflow_dispatch]
 on:
