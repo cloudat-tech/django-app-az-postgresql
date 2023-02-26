@@ -1,9 +1,9 @@
 name: aro-ci-cd-build
 
 env:
-  REGISTRY: docker.io/cloudattech
-  REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-  REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+  JFROG_REGISTRY: cloudattech.jfrog.io/container-repo
+  #JFROG_REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
+  #JFROG_REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
   VAULT_TOKEN: ${{secrets.VAULT_TOKEN}}
   OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
   OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
@@ -33,16 +33,16 @@ jobs:
             tlsSkipVerify: false
             #caCertificate: ${{ secrets.VAULT_CA_CERT }}
             secrets: |
-                secret/data/test/django registry_user | REGISTRY_USER ; 
-                secret/data/test/django registry_password | REGISTRY_PASSWORD
-        - run: echo $REGISTRY_USER
-        - run: echo $REGISTRY_PASSWORD
+                secret/data/dev/repos JFROG_USER | JFROG_USER ; 
+                secret/data/dev/repos JFROG_PASSWORD | JFROG_PASSWORD
+        #- run: echo $REGISTRY_USER
+        #- run: echo $REGISTRY_PASSWORD
 
         -  name: Login to Docker Hub
            uses: docker/login-action@v2
            with:
-            username: ${{ env.REGISTRY_USER }}
-            password: ${{ env.REGISTRY_PASSWORD }}
+            username: $JFROG_USER
+            password: $JFROG_PASSWORD
 
         - name: Build from Dockerfile
           id: image-build
