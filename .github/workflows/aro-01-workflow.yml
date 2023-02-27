@@ -33,9 +33,9 @@ jobs:
             images: |
               ${{ env.JFROG_REGISTRY }}/${{ env.JFROG_REPO }}
             tags: |
-              #type=ref,event=branch
+              type=ref,event=branch
               type=semver,pattern={{version}}
-              #type=semver,pattern={{major}}.{{minor}}
+              type=semver,pattern={{major}}.{{minor}}
             flavor: |
               latest=true
         
