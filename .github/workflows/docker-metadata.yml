@@ -54,6 +54,7 @@ jobs:
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v2
         with:
+            registry: ${{ env.JFROG_REGISTRY }}
             username: ${{ steps.import-secrets.outputs.JFROG_USER }}
             password: ${{ steps.import-secrets.outputs.JFROG_PASSWORD }}
       -
