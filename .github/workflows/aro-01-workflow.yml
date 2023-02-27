@@ -53,7 +53,6 @@ jobs:
                 dev/data/repos JFROG_USER | JFROG_USER ; 
                 dev/data/repos JFROG_PASSWORD | JFROG_PASSWORD
         #- run: echo $REGISTRY_USER
-        #- run: echo $REGISTRY_PASSWORD
 
         -  name: Set up Docker Buildx
            uses: docker/setup-buildx-action@v2
