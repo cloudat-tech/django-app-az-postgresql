@@ -34,7 +34,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ${{ env.JFROG_REGISTRY }}/${{ env.JFROG_REPO }}
+          images: ${{ env.JFROG_REGISTRY }}/${{ env.JFROG_REPO }}/${{ env.APP_NAME }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
