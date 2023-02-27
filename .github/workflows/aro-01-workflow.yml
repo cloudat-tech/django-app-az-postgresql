@@ -26,6 +26,19 @@ jobs:
         - name: Checkout Sourcecode
           uses: actions/checkout@v3
         
+        - name: Generate Docker metadata
+          id: meta
+          uses: docker/metadata-action@v3
+          with:
+            images: |
+              ${{ env.JFROG_REGISTRY }}/${{ env.JFROG_REPO }}
+            tags: |
+              type=ref,event=branch
+              type=semver,pattern={{version}}
+              #type=semver,pattern={{major}}.{{minor}}
+            flavor: |
+              latest=true
+        
         - name: Import Secrets
           id: import-secrets
           uses: hashicorp/vault-action@v2
@@ -41,7 +54,7 @@ jobs:
                 dev/data/repos JFROG_PASSWORD | JFROG_PASSWORD
         #- run: echo $REGISTRY_USER
         #- run: echo $REGISTRY_PASSWORD
-        
+
         -  name: Set up Docker Buildx
            uses: docker/setup-buildx-action@v2
 
@@ -57,9 +70,11 @@ jobs:
           with:
            context: .
            push: true
-           tags: |
-              ${{ env.JFROG_REGISTRY }}/${{ env.JFROG_REPO }}/${{ env.APP_NAME }}:${{ env.TAG }}
-              ${{ env.JFROG_REGISTRY }}/${{ env.JFROG_REPO }}/${{ env.APP_NAME }}:${{ github.sha }}
+           #tags: |
+           tags: ${{ steps.meta.outputs.tags }}
+           labels: ${{ steps.meta.outputs.labels }}
+              #${{ env.JFROG_REGISTRY }}/${{ env.JFROG_REPO }}/${{ env.APP_NAME }}:${{ env.TAG }}
+              #${{ env.JFROG_REGISTRY }}/${{ env.JFROG_REPO }}/${{ env.APP_NAME }}:${{ github.sha }}
            #cache-from: type=local,src=/tmp/.buildx-cache
            #cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
            cache-from: type=gha
