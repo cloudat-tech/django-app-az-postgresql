@@ -1,0 +1,66 @@
+name: ci
+
+env:
+  JFROG_REGISTRY: cloudattech.jfrog.io
+  JFROG_REPO: container-repo 
+  JFROG_REGISTRY_USER: ${{ secrets.JFROG_REGISTRY_USER }}
+  JFROG_REGISTRY_PASSWORD: ${{ secrets.JFROG_REGISTRY_PASSWORD }}
+  VAULT_TOKEN: ${{secrets.VAULT_TOKEN}}
+  OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
+  OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
+  OPENSHIFT_NAMESPACE: "amol-tapase-dev"
+  APP_NAME: "django-app"
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'main'
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - 'main'
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+      -
+        name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.JFROG_REGISTRY }}/${{ env.JFROG_REPO }}
+
+      - name: Import Secrets
+        id: import-secrets
+        uses: hashicorp/vault-action@v2
+        with:
+            method: token
+            url: https://vault-public-vault-baebe7c1.3dda8bad.z1.hashicorp.cloud:8200
+            namespace: admin/
+            token: ${{ env.VAULT_TOKEN }}
+            tlsSkipVerify: false
+            #caCertificate: ${{ secrets.VAULT_CA_CERT }}
+            secrets: |
+                dev/data/repos JFROG_USER | JFROG_USER ; 
+                dev/data/repos JFROG_PASSWORD | JFROG_PASSWORD
+      -
+        name: Login to DockerHub
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v2
+        with:
+            username: ${{ steps.import-secrets.outputs.JFROG_USER }}
+            password: ${{ steps.import-secrets.outputs.JFROG_PASSWORD }}
+      -
+        name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}

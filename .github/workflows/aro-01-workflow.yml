@@ -13,10 +13,10 @@ env:
   TAG: "latest"
 
 #on: [ workflow_dispatch]
-on:
-  push:
-    branches:
-      - "main"
+#on:
+  #push:
+    #branches:
+      #- "main"
 
 jobs:
   Build:
