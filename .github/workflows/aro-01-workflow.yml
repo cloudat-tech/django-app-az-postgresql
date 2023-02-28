@@ -12,11 +12,11 @@ env:
   APP_NAME: "django-app"
   TAG: "latest"
 
-on: [ workflow_dispatch]
-#on:
-#  push:
-#    branches:
-#     - "main"
+#on: [ workflow_dispatch]
+on:
+  push:
+    branches:
+     - "main"
 
 jobs:
   Build:
@@ -68,3 +68,28 @@ jobs:
             #run: |
              #rm -rf /tmp/.buildx-cache
              #mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+  Deploy:      
+    name: Deploy
+    runs-on: ubuntu-20.04
+    needs: [ Build ]
+    steps:
+        - name: Checkout Sourcecode
+          uses: actions/checkout@v3
+
+        - name: Login to ARO Cluster
+          id: set-aro-context
+          uses: redhat-actions/oc-login@v1
+          with:
+            openshift_server_url: ${{ env.OPENSHIFT_SERVER }}
+            openshift_token: ${{ env.OPENSHIFT_TOKEN }}
+            insecure_skip_tls_verify: true
+            namespace: ${{ env.OPENSHIFT_NAMESPACE }}
+
+        - name: Create and expose app
+          id: deploy-app
+          uses: Azure/k8s-deploy@v4
+          with:
+            namespace: ${{ env.OPENSHIFT_NAMESPACE }}
+            manifests: |
+              manifest/deployment.yml
+              manifest/external_db_service.yml

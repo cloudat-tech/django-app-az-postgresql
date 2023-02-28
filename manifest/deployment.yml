@@ -49,3 +49,13 @@ spec:
       targetPort: 8000
   selector:
     app: django-app
+
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: django-app-route
+spec:
+  to:
+    kind: Service
+    name: python-frontend
