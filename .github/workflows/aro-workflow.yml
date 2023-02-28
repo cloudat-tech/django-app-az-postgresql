@@ -1,4 +1,4 @@
-name: aro-ci-cd
+name: ci-cd
 
 env:
   REGISTRY: docker.io/cloudattech
