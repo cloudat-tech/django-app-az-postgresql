@@ -1,0 +1,27 @@
+---
+kind: "Service"
+apiVersion: "v1"
+metadata:
+  name: "pgsql-svc-backend"
+spec:
+  ports:
+    -
+      name: "pgsql-svc-backend"
+      protocol: "TCP"
+      port: 5432
+      targetPort: 5432
+      nodePort: 0
+---
+kind: "Endpoints"
+apiVersion: "v1"
+metadata:
+  name: "pgsql-svc-backend"
+subsets:
+  -
+    addresses:
+      -
+        ip: "1.1.1.1"
+    ports:
+      -
+        port: 5432
+        name: "pgsql-svc-backend"
