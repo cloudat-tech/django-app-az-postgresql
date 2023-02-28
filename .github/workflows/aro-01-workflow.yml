@@ -13,10 +13,10 @@ env:
   TAG: "latest"
 
 #on: [ workflow_dispatch]
-#on:
-#  push:
-#    branches:
-#     - "main"
+on:
+  push:
+    branches:
+     - "main"
 
 jobs:
   Build:
@@ -25,14 +25,7 @@ jobs:
     steps:
         - name: Checkout Sourcecode
           uses: actions/checkout@v3
-        
-        - name: Generate Docker metadata
-          id: meta
-          uses: docker/metadata-action@v4
-          with:
-            images: |
-              ${{ env.JFROG_REGISTRY }}/${{ env.JFROG_REPO }}/${{ env.APP_NAME }}
-        
+              
         - name: Import Secrets
           id: import-secrets
           uses: hashicorp/vault-action@v2
@@ -63,10 +56,8 @@ jobs:
           with:
            context: .
            push: true
-           #tags: |
-           tags: ${{ steps.meta.outputs.tags }}
-           labels: ${{ steps.meta.outputs.labels }}
-              #${{ env.JFROG_REGISTRY }}/${{ env.JFROG_REPO }}/${{ env.APP_NAME }}:${{ env.TAG }}
+           tags: |
+              ${{ env.JFROG_REGISTRY }}/${{ env.JFROG_REPO }}/${{ env.APP_NAME }}:${{ env.TAG }}
               #${{ env.JFROG_REGISTRY }}/${{ env.JFROG_REPO }}/${{ env.APP_NAME }}:${{ github.sha }}
            #cache-from: type=local,src=/tmp/.buildx-cache
            #cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
