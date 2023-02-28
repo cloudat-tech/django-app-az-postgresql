@@ -1,4 +1,4 @@
-name: aro-ci-cd-build
+name: aro-ci-cd
 
 env:
   JFROG_REGISTRY: cloudattech.jfrog.io
