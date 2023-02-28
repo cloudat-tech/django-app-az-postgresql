@@ -58,7 +58,7 @@ jobs:
            push: true
            tags: |
               ${{ env.JFROG_REGISTRY }}/${{ env.JFROG_REPO }}/${{ env.APP_NAME }}:${{ env.TAG }}
-              #${{ env.JFROG_REGISTRY }}/${{ env.JFROG_REPO }}/${{ env.APP_NAME }}:${{ github.sha }}
+            #${{ env.JFROG_REGISTRY }}/${{ env.JFROG_REPO }}/${{ env.APP_NAME }}:${{ github.sha }}
            #cache-from: type=local,src=/tmp/.buildx-cache
            #cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
            #cache-from: type=gha
