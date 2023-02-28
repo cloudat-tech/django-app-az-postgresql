@@ -10,7 +10,7 @@ env:
   APP_NAME: "django-app"
   TAG: "latest"
 
-#on: [ workflow_dispatch]
+on: [ workflow_dispatch]
 #on:
 #  push:
 #    branches:
