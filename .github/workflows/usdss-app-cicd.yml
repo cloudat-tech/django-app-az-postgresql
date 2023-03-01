@@ -1,0 +1,136 @@
+name: usdss-app-deployment
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - testqa
+      #- development
+      #- docker
+    types:
+      - closed
+    paths:
+      - 'maintenance-page'
+    path-ignore:
+      - 'maintenance-page/README.md'
+env:
+  AZURE_CLIENT_ID: ${{ secrets.CIO_KPS_DEV_ARO_CLUSTER_SP_CLIENTID }}
+  AZURE_CLIENT_SECRET: ${{ secrets.CIO_KPS_DEV_ARO_CLLUSTER_SP_CLIENTSECRET }}
+  AZURE_TENANT_ID: '${{ secrets.CIO_KPS_TENTANTID }}'
+  #NOTE: spelling matches secret as configured in org
+  AZURE_SUBSCRIPITON_ID: '${{ secrets.CIO_KPS_SUBID }}' 
+  AZURE_PULL_SECRET: ${{ secrets.ARO_PULL_SECRET }}
+
+
+jobs:
+  app-build:
+    runs-on: [ dev-aro-cluster ]
+    #if: ${{ false }}  
+    defaults:
+      run:
+        working-directory: src/
+
+    steps:
+    - name: Check out source code
+      uses: actions/checkout@v3
+
+  #  - name: azure login
+  #    uses: azure/login@v1
+  #    with:
+  #      creds: '{"clientId":"${{ env.ARM_CLIENT_ID }}","clientSecret":"${{ env.ARM_CLIENT_SECRET }}","subscriptionId":"${{ env.ARM_SUBSCRIPTION_ID }}","tenantId":"${{ env.ARM_TENANT_ID }}"}'
+
+   # - name: docker login
+   #   uses: Azure/docker-login@v1
+   #   with:
+   #     login-server: kyndryl.jfrog.io
+   #     username: ${{ steps.secrets.outputs.JFROG_USERNAME }}
+   #     token: ${{ secrets.JFROG_TOKEN }}
+        #password: ${{ steps.secrets.outputs.JFROG_PASSWORD }}
+      
+    - name: Jfrog secrets
+      id: secrets
+      uses: hashicorp/vault-action@v2
+      with:
+        method: token
+        url: https://vault.kyndryl.net/
+        namespace: kyndryl/KYNDRYL_PRACTICES/
+        token: ${{ secrets.VAULT_TOKEN }}
+        tlsSkipVerify: false
+        #caCertificate: ${{ secrets.VAULT_CA_CERT }}
+        secrets: |
+            kps-cto-app-usdss/data/jfrog username | JFROG_USERNAME ;
+            kps-cto-app-usdss/data/jfrog token | JFROG_TOKEN
+            
+    - name: Login to Jfrog Repo
+      uses: docker/login-action@v2
+      with:
+        registry: kyndryl.jfrog.io
+        username: ${{ steps.secrets.outputs.JFROG_USERNAME }}
+        password: ${{ steps.secrets.outputs.JFROG_TOKEN }}
+
+
+    - name: frontend image build
+      working-directory: src/maintenance-page/
+      continue-on-error: true
+      run: |
+        #docker login kyndryl.jfrog.io -u ${{ secrets.JFROG_USERNAME }} -p ${{ secrets.JFROG_PASSWORD }}
+        docker build -t kyndryl.jfrog.io/usdss-docker-local/dstest:latest .
+        docker push kyndryl.jfrog.io/usdss-docker-local/dstest:latest
+        
+  app-deployments:
+    runs-on: [ dev-aro-cluster ]
+    needs: [app-build]
+    #defaults:
+    #  run:
+    #    working-directory: src/online-boutique-app
+
+    steps:
+    - name: ARO secrets
+      id: secrets
+      uses: hashicorp/vault-action@v2
+      with:
+        method: token
+        url: https://vault.kyndryl.net/
+        namespace: kyndryl/KYNDRYL_PRACTICES/
+        token: ${{ secrets.VAULT_TOKEN }}
+        tlsSkipVerify: false
+        #caCertificate: ${{ secrets.VAULT_CA_CERT }}
+        secrets: |
+            kps-cto-app-usdss/data/openshift_sa SA_TOKEN | ARO_TOKEN ;
+            kps-cto-app-usdss/data/openshift_sa SA_NAMESPACE | ARO_NAMESPACE ;
+            kps-cto-app-usdss/data/jfrog username | JFROG_USERNAME ;
+            kps-cto-app-usdss/data/jfrog token | JFROG_TOKEN
+    - name: Check out source code
+      uses: actions/checkout@v3
+      
+    - name: Set ARO context
+      id: set-context
+      uses: redhat-actions/oc-login@v1
+      with:
+          openshift_server_url: "https://api.dev.arocluster.net:6443"
+          openshift_token: ${{ steps.secrets.outputs.ARO_TOKEN }}
+          insecure_skip_tls_verify: "false"
+          certificate_authority_data: ${{ secrets.ARO_OC_DEV_CA }}
+          namespace: "ns-usdss-cto-kps-dev-wus2"
+    
+    - name: Set ImagePullSecret 
+      uses: Azure/k8s-create-secret@v1.1
+      with:
+        namespace: "ns-usdss-cto-kps-dev-wus2"
+        container-registry-url: kyndryl.jfrog.io
+        container-registry-username: ${{ steps.secrets.outputs.JFROG_USERNAME }}
+        container-registry-password: ${{ steps.secrets.outputs.JFROG_TOKEN }}
+        secret-name: usdss-app-secrets
+
+    - name: Deploy to AKS
+      id: oc-new-app
+      uses: Azure/k8s-deploy@v4
+     # uses: redhat-actions/oc-new-app@v1
+      with:
+        namespace: "ns-usdss-cto-kps-dev-wus2"
+        manifests: |
+          release/kubernetes-manifests-dstest.yaml
+        images: |
+          kyndryl.jfrog.io/usdss-docker-local/dstest:latest
+        image_pull_secret_name: |
+           usdss-app-secrets
+          
