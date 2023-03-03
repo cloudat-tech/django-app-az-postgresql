@@ -58,4 +58,4 @@ metadata:
 spec:
   to:
     kind: Service
-    name: python-frontend
+    name: django-app-frontend
